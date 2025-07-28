@@ -1,5 +1,7 @@
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 // Hold information about the course
@@ -9,7 +11,7 @@ public class Course {
     private String name;
     private int[] holes;
     private int totalPar;
-private int courseId;
+    private int courseId;
 
     // set holeCount
     public int getHoleCount() {
@@ -59,7 +61,7 @@ private int courseId;
     }
 
     // create new row if adding a course
-    public void createCourse(Connection conn) throws SQLException {
+    public void createCourseData(Connection conn) throws SQLException {
         String sql = "INSERT INTO courses (name, hole_count) VALUES (?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, this.name);
@@ -84,7 +86,7 @@ private int courseId;
             String sql = "INSERT INTO holes (hole_number, par, course_id) VALUES (?, ?, ?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, i);
-                stmt.setInt(2, holes[i-1]);
+                stmt.setInt(2, holes[i - 1]);
                 stmt.setInt(3, courseId);
                 stmt.executeUpdate();
             }
@@ -101,4 +103,98 @@ private int courseId;
     public int getHolePar(int num) {
         return holes[num];
     }
+
+
+    public static int getCourseID(Scanner input, List<String> courseNames, String url) throws SQLException {
+
+        String name;
+        // get user input
+        while (true) {
+            try {
+                int choice = input.nextInt();
+                // get the name of listed course
+                name = courseNames.get(choice - 1);
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter an integer");
+            }
+        }
+
+
+        // return course id
+        String sql = "SELECT course_id FROM courses WHERE name = ?";
+
+        try (Connection conn = Database.getConnection()) {
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, name);
+                ResultSet rs = stmt.executeQuery();
+                return rs.getInt("course_id");
+            }
+
+        }
+
+    }
+
+    // create course
+    public static void createCourse(Scanner input, String url) {
+        // create new course class
+        Course newcourse = new Course();
+
+        System.out.println("Enter course name");
+        newcourse.setName(input.nextLine());
+
+        System.out.println("Enter number of holes on course");
+        newcourse.setHoleCount(input.nextInt());
+
+        // ask for par for each hole
+        newcourse.setHoles();
+
+        // create course
+        try (Connection conn = Database.getConnection()) {
+            newcourse.createCourseData(conn);
+            newcourse.createHoles(conn);
+            System.out.println("New course added!");
+        } catch (SQLException e) {
+            System.out.println("Error adding course: " + e.getMessage());
+        }
+
+
+        // TEMP DISPLAY COURSE
+        System.out.println(newcourse.getName() + " (Par " + newcourse.getTotalPar() + ")");
+        newcourse.getHoleResults();
+    }
+
+    // begin adding round
+    // displays all courses to the user, then returns names with list to use find in database
+    public static List<String> addRound(Scanner input, String url) {
+        System.out.println("What course did you play?");
+        // array list needed to keep track of names on the list
+        List<String> courseNames = new ArrayList<>();
+
+        try (Connection conn = Database.getConnection()) {
+            // select all courses
+            String sql = "SELECT name FROM courses";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                ResultSet rs = stmt.executeQuery();
+
+                // keep of how many courses being displayed
+                int i = 1;
+                // loop through result set, list all courses
+                while (rs.next()) {
+                    String name = rs.getString("name");
+                    System.out.println(i++ + ") " + name);
+                    courseNames.add(name);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching courses: " + e.getMessage());
+        }
+
+        // return list
+        return courseNames;
+    }
+
+
 }
