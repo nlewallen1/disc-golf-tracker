@@ -42,7 +42,8 @@ public class Main {
                 System.out.println(courseId);
 
                 // get user input
-                NewRound.askResults(courseId);
+                NewRound newRound = new NewRound(courseId);
+                newRound.createNewRound();
         }
     }
 

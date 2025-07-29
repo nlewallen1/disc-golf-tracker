@@ -10,13 +10,29 @@ import java.util.Scanner;
 // FIXME display results to user
 // add a new round of stats
 public class NewRound {
+    private String date;
+    private int roundId;
+    private int totalStrokes;
+    private int totalPar;
+    private int finalScore;
+    private final int courseId;
+    private int[] holeIds;
+    private int[] holeResults;
+    private int holeCount;
+    Scanner input = new Scanner(System.in);
 
-    public static void askResults(int courseId) {
-        Scanner input = new Scanner(System.in);
-        String date;
-        int roundId = 0;
-        int totalStrokes = 0;
-        int totalPar = 0;
+
+    // constructor
+    public NewRound(int courseId) {
+        date = "";
+        roundId = 0;
+        totalStrokes = 0;
+        totalPar = 0;
+        finalScore = 0;
+        this.courseId = courseId;
+    }
+
+    public void askRound() {
 
         while (true) {
             try {
@@ -48,9 +64,13 @@ public class NewRound {
             System.out.println(e.getMessage());
         }
 
-        int[] holeResults;
+
+    }
+
+    public void getHoleAmount() {
+
         // determine amount of holes on course
-        int holeCount = 0;
+        holeCount = 0;
         try (Connection conn = Database.getConnection()) {
             String sql = "SELECT hole_count FROM courses WHERE course_id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -63,7 +83,9 @@ public class NewRound {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
 
+    public void askResults() {
         // loop through each hole, ask for results
         holeResults = new int[holeCount];
         for (int i = 0; i < holeCount; i++) {
@@ -80,9 +102,11 @@ public class NewRound {
                 }
             }
         }
+    }
 
+    public void getHoleIds() {
         // get hole id's for the course
-        int[] holeIds = new int[holeCount];
+        holeIds = new int[holeCount];
         try (Connection conn = Database.getConnection()) {
             // select hole_id
             String sql = "SELECT holes.hole_id FROM holes INNER JOIN courses ON courses.course_id = holes.course_id WHERE courses.course_id = ?";
@@ -100,9 +124,11 @@ public class NewRound {
             System.out.println(e.getMessage());
         }
 
+    }
 
+    public void getHoleResults() {
+        // insert into hole_results
         try (Connection conn = Database.getConnection()) {
-            // insert into hole_results
             String sql = "INSERT INTO hole_results (hole_id, round_id, strokes) VALUES (?, ?, ?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 for (int i = 0; i < holeCount; i++) {
@@ -117,6 +143,9 @@ public class NewRound {
             System.out.println(e.getMessage());
         }
 
+    }
+
+    public void setFinalScore() {
         // set final score to the sum of hole_results strokes minus sum of all pars with the proper course_id
         // get total strokes
         try (Connection conn = Database.getConnection()) {
@@ -141,9 +170,10 @@ public class NewRound {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        finalScore = totalStrokes - totalPar;
+    }
 
-        int finalScore = totalStrokes - totalPar;
-
+    public void updateFinalScore() {
         try (Connection conn = Database.getConnection()) {
             String sql = "UPDATE rounds SET final_score = ? WHERE round_id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -154,7 +184,17 @@ public class NewRound {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
 
+    // create new round method
+    public void createNewRound() {
+        askRound();
+        getHoleAmount();
+        askResults();
+        getHoleIds();
+        getHoleResults();
+        setFinalScore();
+        updateFinalScore();
     }
 }
 
