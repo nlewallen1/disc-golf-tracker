@@ -44,6 +44,7 @@ public class Main {
                 // get user input
                 NewRound newRound = new NewRound(courseId);
                 newRound.createNewRound();
+                newRound.displayResults();
         }
     }
 
