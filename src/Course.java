@@ -61,6 +61,7 @@ public class Course {
     }
 
     // create new row if adding a course
+    // FIXME maybe move
     public void createCourseData(Connection conn) throws SQLException {
         String sql = "INSERT INTO courses (name, hole_count) VALUES (?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -79,20 +80,6 @@ public class Course {
         }
     }
 
-    // create new row adding hole
-    public void createHoles(Connection conn) throws SQLException {
-        // create proper amount of holes
-        for (int i = 1; i <= holeCount; i++) {
-            String sql = "INSERT INTO holes (hole_number, par, course_id) VALUES (?, ?, ?)";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, i);
-                stmt.setInt(2, holes[i - 1]);
-                stmt.setInt(3, courseId);
-                stmt.executeUpdate();
-            }
-        }
-    }
-
     // show each hole, par for it
     public void getHoleResults() {
         for (int i = 0; i < holeCount; i++) {
@@ -105,7 +92,7 @@ public class Course {
     }
 
 
-    public static int getCourseID(Scanner input, List<String> courseNames, String url) throws SQLException {
+    public static int askCourseID(Scanner input, List<String> courseNames, String url) throws SQLException {
 
         String name;
         // get user input
@@ -137,23 +124,21 @@ public class Course {
     }
 
     // create course
-    public static void createCourse(Scanner input, String url) {
-        // create new course class
-        Course newcourse = new Course();
+    public void createCourse(Scanner input, String url) {
 
         System.out.println("Enter course name");
-        newcourse.setName(input.nextLine());
+        setName(input.nextLine());
 
         System.out.println("Enter number of holes on course");
-        newcourse.setHoleCount(input.nextInt());
+        setHoleCount(input.nextInt());
 
         // ask for par for each hole
-        newcourse.setHoles();
+         setHoles();
 
         // create course
         try (Connection conn = Database.getConnection()) {
-            newcourse.createCourseData(conn);
-            newcourse.createHoles(conn);
+            createCourseData(conn);
+            HoleDAO.createHoles(conn, holeCount, holes, courseId);
             System.out.println("New course added!");
         } catch (SQLException e) {
             System.out.println("Error adding course: " + e.getMessage());
@@ -161,13 +146,13 @@ public class Course {
 
 
         // TEMP DISPLAY COURSE
-        System.out.println(newcourse.getName() + " (Par " + newcourse.getTotalPar() + ")");
-        newcourse.getHoleResults();
+        System.out.println(name + " (Par " + totalPar + ")");
+        getHoleResults();
     }
 
     // begin adding round
     // displays all courses to the user, then returns names with list to use find in database
-    public static List<String> addRound(Scanner input, String url) {
+    public static List<String> addRound() {
         System.out.println("What course did you play?");
         // array list needed to keep track of names on the list
         List<String> courseNames = new ArrayList<>();

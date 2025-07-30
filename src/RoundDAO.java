@@ -2,7 +2,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class RoundDAO {
@@ -86,5 +88,150 @@ public class RoundDAO {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public static List<String> showDates() {
+        System.out.println("What round would you like to view?");
+        // array list needed to keep track of dates on the list
+        List<String> dates = new ArrayList<>();
+
+        try (Connection conn = Database.getConnection()) {
+            // select all dates
+            String sql = "SELECT date FROM rounds";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                ResultSet rs = stmt.executeQuery();
+
+                // keep of how many dates being displayed
+                int i = 1;
+                // loop through result set, list all dates
+                while (rs.next()) {
+                    String name = rs.getString("date");
+                    System.out.println(i++ + ") " + name);
+                    dates.add(name);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching dates: " + e.getMessage());
+        }
+
+        // return list
+        return dates;
+    }
+
+    public static int askRoundID(Scanner input, List<String> dates) throws SQLException {
+
+        String date;
+        // get user input
+        while (true) {
+            try {
+                int choice = input.nextInt();
+                // get the round
+                date = dates.get(choice - 1);
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter an integer");
+            }
+        }
+
+
+        // return course id
+        String sql = "SELECT round_id FROM rounds WHERE date = ?";
+
+        try (Connection conn = Database.getConnection()) {
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, date);
+                ResultSet rs = stmt.executeQuery();
+                return rs.getInt("round_id");
+            }
+
+        }
+
+    }
+
+    // display course, hole number, hole par, strokes
+    // need to use roundId to get the right results, then simply display in ascending order, but also need to match to
+    // hole_id in holes to get the par
+    // FIXME bogeys, birdies etc.
+    public static void displayResults(int roundId) {
+        try (Connection conn = Database.getConnection()) {
+            String sql = "SELECT course_id FROM rounds WHERE round_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, roundId);
+                ResultSet rs = stmt.executeQuery();
+                int courseId = rs.getInt(1);
+                System.out.println("Course: " + CourseDAO.getName(courseId));
+            }
+
+            // select final score, results for each hole
+            sql = "SELECT holes.hole_number, holes.par, hole_results.strokes FROM hole_results " +
+                    "INNER JOIN holes ON holes.hole_id = hole_results.hole_id WHERE hole_results.round_id = ?" +
+                    "ORDER BY hole_results.hole_id ASC";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, roundId);
+                ResultSet rs = stmt.executeQuery();
+
+                // loop through result set, list all dates
+                while (rs.next()) {
+                    int holeNumber = rs.getInt("hole_number");
+                    int par = rs.getInt("par");
+                    int strokes = rs.getInt("strokes");
+
+                    // single space
+                    if (holeNumber < 10) {
+                        // displays as under/at par
+                        if (strokes - par <= 0) {
+                            System.out.printf("Hole %d: Par %d, Strokes %d (%d)%n", holeNumber, par, strokes, strokes - par);
+                        }
+                        // displays as over par
+                        else {
+                            System.out.printf("Hole %d: Par %d, Strokes %d (+%d)%n", holeNumber, par, strokes, strokes - par);
+                        }
+                    }
+                    // double space
+                    else {
+                        // displays as under/at par
+                        if (strokes - par <= 0) {
+                            System.out.printf("Hole %2d: Par %d, Strokes %d (%d)%n", holeNumber, par, strokes, strokes - par);
+                        }
+                        // displays as over par
+                        else {
+                            System.out.printf("Hole %2d: Par %d, Strokes %d (+%d)%n", holeNumber, par, strokes, strokes - par);
+                        }
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching dates: " + e.getMessage());
+        }
+
+        // display final score
+        int finalScore = RoundDAO.getFinalScore(roundId);
+        // if + final score
+        if (finalScore > 0) {
+            System.out.println("Final score: +" + finalScore);
+        }
+        // - or 0 final score
+        else {
+            System.out.println("Final score: " + finalScore);
+        }
+    }
+    public static int getFinalScore(int roundId) {
+        try (Connection conn = Database.getConnection()) {
+            // select final score, results for each hole
+            String sql = "SELECT final_score FROM rounds WHERE round_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, roundId);
+                ResultSet rs = stmt.executeQuery();
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching dates: " + e.getMessage());
+        }
+        // failed
+        return 0;
     }
 }

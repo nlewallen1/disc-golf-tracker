@@ -4,6 +4,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class HoleDAO {
+
+    // create new row adding hole
+    public static void createHoles(Connection conn, int holeCount, int[] holes, int courseId) throws SQLException {
+        // create proper amount of holes
+        for (int i = 1; i <= holeCount; i++) {
+            String sql = "INSERT INTO holes (hole_number, par, course_id) VALUES (?, ?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, i);
+                stmt.setInt(2, holes[i - 1]);
+                stmt.setInt(3, courseId);
+                stmt.executeUpdate();
+            }
+        }
+    }
+
     public static int[] getHoleIds(int holeCount, int courseId) {
         // get hole id's for the course
         int[] holeIds = new int[holeCount];

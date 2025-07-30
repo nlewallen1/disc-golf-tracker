@@ -16,6 +16,7 @@ public class Main {
 
         System.out.println("1. Add course");
         System.out.println("2. Add round");
+        System.out.println("3. View round");
 
         int choice = input.nextInt();
         input.nextLine();
@@ -24,27 +25,43 @@ public class Main {
         switch (choice) {
             // call createCourseData
             case 1:
-                Course.createCourse(input, url);
+                Course newcourse = new Course();
+                newcourse.createCourse(input, url);
                 break;
 
             // add a round
             case 2:
                 // ask user for input and get course names
-                List<String> courseNames = Course.addRound(input, url);
+                List<String> courseNames = Course.addRound();
 
                 // get course id
                 int courseId = 0;
                 try {
-                    courseId = Course.getCourseID(input, courseNames, url);
+                    courseId = Course.askCourseID(input, courseNames, url);
                 } catch (SQLException e) {
                     System.out.println("Failed to get course_id" + e.getMessage());
                 }
-                System.out.println(courseId);
 
                 // get user input
                 NewRound newRound = new NewRound(courseId);
                 newRound.createNewRound();
                 newRound.displayResults();
+                break;
+            // view round
+            case 3:
+
+                // ask user for input and get dates
+                List<String> dates = RoundDAO.showDates();
+
+                // get round id
+                int roundId = 0;
+                try {
+                    roundId = RoundDAO.askRoundID(input, dates);
+                } catch (SQLException e) {
+                    System.out.println("Failed to get round_id" + e.getMessage());
+                }
+                RoundDAO.displayResults(roundId);
+
         }
     }
 
