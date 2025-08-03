@@ -57,10 +57,9 @@ public class NewRound {
     // display new round
     public void displayResults() {
         System.out.println("Round successfully added!");
-        System.out.println("Final results:");
-        System.out.println("Score: " + finalScore);
+
         System.out.println("Round review: ");
-        // future more general method in Database class
+        RoundDAO.displayResults(roundId);
 
     }
 }

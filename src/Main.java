@@ -17,6 +17,7 @@ public class Main {
         System.out.println("1. Add course");
         System.out.println("2. Add round");
         System.out.println("3. View round");
+        System.out.println("4. Edit round");
 
         int choice = input.nextInt();
         input.nextLine();
@@ -61,6 +62,8 @@ public class Main {
                     System.out.println("Failed to get round_id" + e.getMessage());
                 }
                 RoundDAO.displayResults(roundId);
+                break;
+            case 4:
 
         }
     }

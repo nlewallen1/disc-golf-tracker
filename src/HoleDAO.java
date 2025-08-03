@@ -2,6 +2,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Scanner;
 
 public class HoleDAO {
 
@@ -41,6 +43,7 @@ public class HoleDAO {
         return holeIds;
 
     }
+
     public static void insertHoleResults(int holeCount, int[] holeIds, int roundId, int[] holeResults) {
         // insert into hole_results
         try (Connection conn = Database.getConnection()) {
@@ -58,5 +61,22 @@ public class HoleDAO {
             System.out.println(e.getMessage());
         }
 
+    }
+
+    public static void editHoleResults() {
+        Scanner input = new Scanner(System.in);
+
+        // need to display rounds for editing
+        // ask user for input and get dates
+        List<String> dates = RoundDAO.showDates();
+
+        // get round id
+        int roundId = 0;
+        try {
+            roundId = RoundDAO.askRoundID(input, dates);
+        } catch (SQLException e) {
+            System.out.println("Failed to get round_id" + e.getMessage());
+        }
+        RoundDAO.displayResults(roundId);
     }
 }

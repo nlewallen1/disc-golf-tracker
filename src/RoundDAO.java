@@ -97,7 +97,7 @@ public class RoundDAO {
 
         try (Connection conn = Database.getConnection()) {
             // select all dates
-            String sql = "SELECT date FROM rounds";
+            String sql = "SELECT rounds.date, courses.name FROM rounds INNER JOIN courses ON courses.course_id = rounds.course_id";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 ResultSet rs = stmt.executeQuery();
 
@@ -105,9 +105,10 @@ public class RoundDAO {
                 int i = 1;
                 // loop through result set, list all dates
                 while (rs.next()) {
-                    String name = rs.getString("date");
-                    System.out.println(i++ + ") " + name);
-                    dates.add(name);
+                    String date = rs.getString("date");
+                    String course = rs.getString("name");
+                    System.out.println(i++ + ". " + date + " (" + course + ")");
+                    dates.add(date);
                 }
             }
 
