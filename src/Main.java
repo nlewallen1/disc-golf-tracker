@@ -64,7 +64,7 @@ public class Main {
                 RoundDAO.displayResults(roundId);
                 break;
             case 4:
-
+                HoleDAO.editHoleResults();
         }
     }
 

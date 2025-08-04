@@ -38,4 +38,20 @@ public class CourseDAO {
         }
         return "failed";
     }
+
+    // get course_id from round_id
+    public static int getCourseId(int roundId) {
+        try (Connection conn = Database.getConnection()) {
+            String sql = "SELECT courses.course_id FROM courses INNER JOIN rounds ON rounds.course_id = courses.course_id WHERE round_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, roundId);
+                ResultSet rs = stmt.executeQuery();
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        // failed
+        return -1;
+    }
 }
