@@ -50,7 +50,7 @@ public class NewRound {
         askResults();
         holeIds = HoleDAO.getHoleIds(holeCount, courseId);
         HoleDAO.insertHoleResults(holeCount, holeIds, roundId, holeResults);
-        finalScore = RoundDAO.getFinalScore(roundId, courseId);
+        finalScore = RoundDAO.setFinalScore(roundId, courseId);
         RoundDAO.updateFinalScore(finalScore, roundId);
     }
 

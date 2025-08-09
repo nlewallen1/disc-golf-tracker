@@ -47,7 +47,7 @@ public class RoundDAO {
 
 
     }
-    public static int getFinalScore(int roundId, int courseId) {
+    public static int setFinalScore(int roundId, int courseId) {
         // set final score to the sum of hole_results strokes minus sum of all pars with the proper course_id
         // get total strokes
         int totalStrokes = 0;

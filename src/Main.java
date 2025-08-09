@@ -14,6 +14,7 @@ public class Main {
 
         Scanner input = new Scanner(System.in);
 
+        //FIXME input validation when menu is complete
         System.out.println("1. Add course");
         System.out.println("2. Add round");
         System.out.println("3. View round");
