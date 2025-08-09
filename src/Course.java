@@ -152,8 +152,7 @@ public class Course {
 
     // begin adding round
     // displays all courses to the user, then returns names with list to use find in database
-    public static List<String> addRound() {
-        System.out.println("What course did you play?");
+    public static List<String> listCourses() {
         // array list needed to keep track of names on the list
         List<String> courseNames = new ArrayList<>();
 
@@ -180,6 +179,8 @@ public class Course {
         // return list
         return courseNames;
     }
+
+
 
 
 }

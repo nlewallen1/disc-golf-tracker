@@ -185,5 +185,21 @@ public class HoleDAO {
         }
     }
 
+    // delete holes from a course id
+    public static void deleteHoles(int courseId) {
+        try (Connection conn = Database.getConnection()) {
+            // select all courses
+            String sql = "DELETE FROM holes WHERE course_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, courseId);
+                stmt.executeUpdate();
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching courses: " + e.getMessage());
+        }
+    }
+
+
 
 }

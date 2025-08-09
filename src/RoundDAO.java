@@ -235,4 +235,18 @@ public class RoundDAO {
         // failed
         return 0;
     }
+
+    public static void deleteAllRounds(int courseId) {
+        try (Connection conn = Database.getConnection()) {
+            // select all courses
+            String sql = "DELETE FROM rounds WHERE course_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, courseId);
+                stmt.executeUpdate();
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching courses: " + e.getMessage());
+        }
+    }
 }

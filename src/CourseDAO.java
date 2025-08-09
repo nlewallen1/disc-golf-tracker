@@ -54,4 +54,19 @@ public class CourseDAO {
         // failed
         return -1;
     }
+
+    public static void deleteCourse(int courseId) {
+        try (Connection conn = Database.getConnection()) {
+            // select all courses
+            String sql = "DELETE FROM courses WHERE course_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, courseId);
+                stmt.executeUpdate();
+                System.out.println("Course deleted!");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching courses: " + e.getMessage());
+        }
+    }
 }
