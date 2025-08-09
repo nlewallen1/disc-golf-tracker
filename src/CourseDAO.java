@@ -57,7 +57,7 @@ public class CourseDAO {
 
     public static void deleteCourse(int courseId) {
         try (Connection conn = Database.getConnection()) {
-            // select all courses
+            // delete course from courseId
             String sql = "DELETE FROM courses WHERE course_id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, courseId);

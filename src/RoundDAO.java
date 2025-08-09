@@ -236,9 +236,24 @@ public class RoundDAO {
         return 0;
     }
 
+    public static void deleteRound(int roundId) {
+        try (Connection conn = Database.getConnection()) {
+            // delete round from roundId
+            String sql = "DELETE FROM rounds WHERE round_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, roundId);
+                stmt.executeUpdate();
+                System.out.println("Round deleted!");
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public static void deleteAllRounds(int courseId) {
         try (Connection conn = Database.getConnection()) {
-            // select all courses
+            // delete all rounds matching the courseId
             String sql = "DELETE FROM rounds WHERE course_id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, courseId);
@@ -246,7 +261,7 @@ public class RoundDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error fetching courses: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 }

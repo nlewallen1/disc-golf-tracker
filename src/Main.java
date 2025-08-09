@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 // notes
 // maybe get rid of all those conn creations
+// stats idea - use final score to calculate number of throws (par amount, under or over)
 
 public class Main {
     public static void main(String[] args) {
@@ -20,6 +21,7 @@ public class Main {
         System.out.println("3. View round");
         System.out.println("4. Edit round");
         System.out.println("5. Delete course");
+        System.out.println("6. Delete round");
 
         int choice = input.nextInt();
         input.nextLine();
@@ -86,9 +88,29 @@ public class Main {
                     System.out.println("Failed to get course_id" + e.getMessage());
                 }
 
+                // delete course, course related
+                Hole_ResultsDAO.deleteResultsCourse(courseId);
                 HoleDAO.deleteHoles(courseId);
                 CourseDAO.deleteCourse(courseId);
                 RoundDAO.deleteAllRounds(courseId);
+                break;
+            }
+            // delete round
+            case 6: {
+                System.out.println("Which round would you like to delete?");
+                List<String> dates = RoundDAO.showDates();
+
+                // get round id
+                int roundId = 0;
+                try {
+                    roundId = RoundDAO.askRoundID(input, dates);
+                } catch (SQLException e) {
+                    System.out.println("Failed to get round_id" + e.getMessage());
+                }
+
+                // delete round, round related
+                Hole_ResultsDAO.deleteResults(roundId);
+                RoundDAO.deleteRound(roundId);
             }
         }
     }

@@ -173,7 +173,7 @@ public class Course {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error fetching courses: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
 
         // return list
