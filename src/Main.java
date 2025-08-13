@@ -22,6 +22,7 @@ public class Main {
         System.out.println("4. Edit round");
         System.out.println("5. Delete course");
         System.out.println("6. Delete round");
+        System.out.println("7. View stats");
 
         int choice = input.nextInt();
         input.nextLine();
@@ -111,6 +112,12 @@ public class Main {
                 // delete round, round related
                 Hole_ResultsDAO.deleteResults(roundId);
                 RoundDAO.deleteRound(roundId);
+                break;
+            }
+            // get stats
+            case 7: {
+                System.out.println("Rounds played: " + RoundDAO.getNumberOfRounds());
+                System.out.println("Total throws: " + Stats.getTotalThrows());
             }
         }
     }

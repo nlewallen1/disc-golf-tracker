@@ -47,6 +47,8 @@ public class RoundDAO {
 
 
     }
+
+    // obtain final score by getting strokes, par
     public static int setFinalScore(int roundId, int courseId) {
         // set final score to the sum of hole_results strokes minus sum of all pars with the proper course_id
         // get total strokes
@@ -77,6 +79,7 @@ public class RoundDAO {
         return totalStrokes - totalPar;
     }
 
+    // change a round's final score
     public static void updateFinalScore(int finalScore, int roundId) {
         try (Connection conn = Database.getConnection()) {
             String sql = "UPDATE rounds SET final_score = ? WHERE round_id = ?";
@@ -90,6 +93,7 @@ public class RoundDAO {
         }
     }
 
+    // get list of rounds dates
     public static List<String> showDates() {
         System.out.println("What round would you like to view?");
         // array list needed to keep track of dates on the list
@@ -120,6 +124,7 @@ public class RoundDAO {
         return dates;
     }
 
+    // obtain round id
     public static int askRoundID(Scanner input, List<String> dates) throws SQLException {
 
         String date;
@@ -219,6 +224,7 @@ public class RoundDAO {
             System.out.println("Final score: " + finalScore);
         }
     }
+    // return final score from a round
     public static int getFinalScore(int roundId) {
         try (Connection conn = Database.getConnection()) {
             // select final score, results for each hole
@@ -236,6 +242,7 @@ public class RoundDAO {
         return 0;
     }
 
+    // delete a round from round id
     public static void deleteRound(int roundId) {
         try (Connection conn = Database.getConnection()) {
             // delete round from roundId
@@ -251,6 +258,7 @@ public class RoundDAO {
         }
     }
 
+    // delete all rounds on a course
     public static void deleteAllRounds(int courseId) {
         try (Connection conn = Database.getConnection()) {
             // delete all rounds matching the courseId
@@ -263,5 +271,22 @@ public class RoundDAO {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    // get rounds played
+    public static int getNumberOfRounds() {
+        try (Connection conn = Database.getConnection()) {
+            // select number of rounds
+            String sql = "SELECT COUNT(round_id) FROM rounds";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                ResultSet rs  = stmt.executeQuery();
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        // failed
+        return -1;
     }
 }
