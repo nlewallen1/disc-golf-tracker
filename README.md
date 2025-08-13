@@ -15,4 +15,4 @@ sqlite-jdbc-3.50.3.0 included in lib
 
 Notes:
 This is a personal project for learning purposes. Contributions are not accepted.
-Currently unfinished. Small bugs currently exist, and the stats section is not completed.
+Currently unfinished.
