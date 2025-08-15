@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 public class Stats {
     private int totalThrows;
+    private double averageScore;
     private int aces;
     private int albatrosses;
     private int eagles;
@@ -18,11 +19,34 @@ public class Stats {
     public void calcStats() {
         calcTotalThrows();
         calcResults();
+        calcAverageScore();
     }
 
     // show all stats to user
     public void displayStats() {
         System.out.println("Rounds played: " + RoundDAO.getNumberOfRounds());
+        // if average is negative, - will display
+        if (averageScore < 0) {
+            // ensure correct average formatting
+            if (averageScore % 1 == 0) {
+                System.out.println("Average score: " + (int) averageScore);
+
+            } else {
+                System.out.println("Average score: " + Math.round((averageScore * 100)) / 100.0);
+
+            }
+        }
+        // display + if positive
+        else {
+            // ensure correct average formatting
+            if (averageScore % 1 == 0) {
+                System.out.println("Average score: +" + (int) averageScore);
+
+            } else {
+                System.out.println("Average score: +" + Math.round((averageScore * 100)) / 100.0);
+
+            }
+        }
         System.out.println("Total throws: " + totalThrows);
         System.out.println("Aces: " + aces);
         System.out.println("Albatrosses: " + albatrosses);
@@ -101,5 +125,18 @@ public class Stats {
         }
     }
 
+    public void calcAverageScore() {
+        try (Connection conn = Database.getConnection()) {
+            // delete course from courseId
+            String sql = "SELECT AVG(final_score) FROM rounds";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                ResultSet rs = stmt.executeQuery();
+                averageScore = rs.getDouble(1);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching courses: " + e.getMessage());
+        }
+    }
 
 }

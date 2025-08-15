@@ -69,4 +69,5 @@ public class CourseDAO {
             System.out.println("Error fetching courses: " + e.getMessage());
         }
     }
+
 }
