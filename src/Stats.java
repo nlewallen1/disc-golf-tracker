@@ -4,20 +4,102 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Stats {
+    private int totalThrows;
+    private int aces;
+    private int albatrosses;
+    private int eagles;
+    private int birdies;
+    private int pars;
+    private int bogeys;
+    private int doubleBogeys;
+    private int tripleBogeys;
+    private int overTripleBogeys;
+
+    public void calcStats() {
+        calcTotalThrows();
+        calcResults();
+    }
+
+    // show all stats to user
+    public void displayStats() {
+        System.out.println("Rounds played: " + RoundDAO.getNumberOfRounds());
+        System.out.println("Total throws: " + totalThrows);
+        System.out.println("Aces: " + aces);
+        System.out.println("Albatrosses: " + albatrosses);
+        System.out.println("Eagles: " + eagles);
+        System.out.println("Birdies: " + birdies);
+        System.out.println("Pars: " + pars);
+        System.out.println("Bogeys: " + bogeys);
+        System.out.println("Double Bogeys: " + doubleBogeys);
+        System.out.println("Triple Bogeys: " + tripleBogeys);
+        System.out.println("Over Triple Bogeys: " + overTripleBogeys);
+    }
+
     // get number of throws
-    public static int getTotalThrows() {
+    public void calcTotalThrows() {
         try (Connection conn = Database.getConnection()) {
             // select sum of strokes
             String sql = "SELECT SUM(strokes) FROM hole_results";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                ResultSet rs  = stmt.executeQuery();
-                return rs.getInt(1);
+                ResultSet rs = stmt.executeQuery();
+                totalThrows = rs.getInt(1);
             }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        // failed
-        return -1;
+
     }
+
+    // get strokes and par each time, ++ to relevant statistical category
+    public void calcResults() {
+        try (Connection conn = Database.getConnection()) {
+
+            String sql = "SELECT hole_results.strokes, holes.par FROM hole_results INNER JOIN holes ON holes.hole_id = hole_results.hole_id";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                ResultSet rs = stmt.executeQuery();
+                // while there are still results
+                while (rs.next()) {
+                    int strokes = rs.getInt(1);
+                    int par = rs.getInt(2);
+                    // par - strokes examples
+                    // 3 - 3 = 0, par
+                    // 3 - 2 = 1, birdie
+                    // 4 - 2 = 2, eagle
+                    // 3 - 4 = -1, bogey
+                    // 3 - 5 = -2, double bogey
+                    // 3 - 6 = -3, triple bogey
+                    // 3 - 7 = -4, > 3+ bogey
+                    int category = par - strokes;
+                    // ace condition
+                    if (strokes == 1) {
+                        aces++;
+                    } else {
+                        // 3+ bogey
+                        if (category <= -4) {
+                            overTripleBogeys++;
+                        } else {
+                            // defined categories
+                            switch (category) {
+                                case -3 -> tripleBogeys++;
+                                case -2 -> doubleBogeys++;
+                                case -1 -> bogeys++;
+                                case 0 -> pars++;
+                                case 1 -> birdies++;
+                                case 2 -> eagles++;
+                                case 3 -> albatrosses++;
+
+                            }
+                        }
+
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+
 }
