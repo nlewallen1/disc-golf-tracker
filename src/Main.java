@@ -116,8 +116,11 @@ public class Main {
             }
             // get stats
             case 7: {
-                System.out.println("Rounds played: " + RoundDAO.getNumberOfRounds());
-                System.out.println("Total throws: " + Stats.getTotalThrows());
+                // stats object
+                Stats stats = new Stats();
+                stats.calcStats();
+
+                stats.displayStats();
             }
         }
     }
