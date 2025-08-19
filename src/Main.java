@@ -24,8 +24,9 @@ public class Main {
             System.out.println("4. Edit round");
             System.out.println("5. Delete course");
             System.out.println("6. Delete round");
-            System.out.println("7. View stats");
-            System.out.println("8. Exit");
+            System.out.println("7. Overall stats");
+            System.out.println("8. Course specific stats");
+            System.out.println("9. Exit");
 
             int choice = input.nextInt();
             input.nextLine();
@@ -117,7 +118,7 @@ public class Main {
                     RoundDAO.deleteRound(roundId);
                     break;
                 }
-                // get stats
+                // get overall stats
                 case 7: {
                     // stats object
                     Stats stats = new Stats();
@@ -126,7 +127,28 @@ public class Main {
                     stats.displayStats();
                     break;
                 }
+                // course specific stats
                 case 8: {
+                    // ask user for input and get course names
+                    System.out.println("What course would you like stats for?");
+                    List<String> courseNames = Course.listCourses();
+
+                    // get course id
+                    int courseId = 0;
+                    try {
+                        courseId = Course.askCourseID(input, courseNames, url);
+                    } catch (SQLException e) {
+                        System.out.println("Failed to get course_id" + e.getMessage());
+                    }
+
+                    // once courseId is retrieved, create new Stats object. functions similarly, just requres id
+                    Stats courseStats = new Stats();
+                    courseStats.calcStats(courseId);
+                    courseStats.displayStats();
+                    break;
+
+                }
+                case 9: {
                     run = false;
                 }
             }

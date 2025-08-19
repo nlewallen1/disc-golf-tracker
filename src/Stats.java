@@ -16,10 +16,18 @@ public class Stats {
     private int tripleBogeys;
     private int overTripleBogeys;
 
+    // overall stats calc
     public void calcStats() {
         calcTotalThrows();
         calcResults();
         calcAverageScore();
+    }
+
+    // course specific stats calc
+    public void calcStats(int courseId) {
+        calcTotalThrows(courseId);
+        calcResults(courseId);
+        calcAverageScore(courseId);
     }
 
     // show all stats to user
@@ -139,4 +147,86 @@ public class Stats {
         }
     }
 
+    // get number of throws for a course
+    public void calcTotalThrows(int courseId) {
+        try (Connection conn = Database.getConnection()) {
+            // select sum of strokes
+            String sql = "SELECT SUM(hole_results.strokes) FROM hole_results INNER JOIN rounds ON rounds.round_id = hole_results.round_id WHERE course_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, courseId);
+                ResultSet rs = stmt.executeQuery();
+                totalThrows = rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    // get strokes and par each time, ++ to relevant statistical category, course specific
+    public void calcResults(int courseId) {
+        try (Connection conn = Database.getConnection()) {
+
+            String sql = "SELECT hole_results.strokes, holes.par FROM hole_results INNER JOIN holes ON holes.hole_id = hole_results.hole_id WHERE holes.course_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, courseId);
+                ResultSet rs = stmt.executeQuery();
+                // while there are still results
+                while (rs.next()) {
+                    int strokes = rs.getInt(1);
+                    int par = rs.getInt(2);
+                    // par - strokes examples
+                    // 3 - 3 = 0, par
+                    // 3 - 2 = 1, birdie
+                    // 4 - 2 = 2, eagle
+                    // 3 - 4 = -1, bogey
+                    // 3 - 5 = -2, double bogey
+                    // 3 - 6 = -3, triple bogey
+                    // 3 - 7 = -4, > 3+ bogey
+                    int category = par - strokes;
+                    // ace condition
+                    if (strokes == 1) {
+                        aces++;
+                    } else {
+                        // 3+ bogey
+                        if (category <= -4) {
+                            overTripleBogeys++;
+                        } else {
+                            // defined categories
+                            switch (category) {
+                                case -3 -> tripleBogeys++;
+                                case -2 -> doubleBogeys++;
+                                case -1 -> bogeys++;
+                                case 0 -> pars++;
+                                case 1 -> birdies++;
+                                case 2 -> eagles++;
+                                case 3 -> albatrosses++;
+
+                            }
+                        }
+
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void calcAverageScore(int courseId) {
+        try (Connection conn = Database.getConnection()) {
+            // delete course from courseId
+            String sql = "SELECT AVG(final_score) FROM rounds WHERE course_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, courseId);
+                ResultSet rs = stmt.executeQuery();
+                averageScore = rs.getDouble(1);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching courses: " + e.getMessage());
+        }
+    }
 }
