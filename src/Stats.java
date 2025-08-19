@@ -2,6 +2,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class Stats {
     private int totalThrows;
@@ -24,10 +26,10 @@ public class Stats {
     }
 
     // course specific stats calc
-    public void calcStats(int courseId) {
-        calcTotalThrows(courseId);
-        calcResults(courseId);
-        calcAverageScore(courseId);
+    public void calcStatsCourse(int courseId) {
+        calcTotalThrowsCourse(courseId);
+        calcResultsCourse(courseId);
+        calcAverageScoreCourse(courseId);
     }
 
     // show all stats to user
@@ -86,7 +88,6 @@ public class Stats {
     // get strokes and par each time, ++ to relevant statistical category
     public void calcResults() {
         try (Connection conn = Database.getConnection()) {
-
             String sql = "SELECT hole_results.strokes, holes.par FROM hole_results INNER JOIN holes ON holes.hole_id = hole_results.hole_id";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 ResultSet rs = stmt.executeQuery();
@@ -135,7 +136,7 @@ public class Stats {
 
     public void calcAverageScore() {
         try (Connection conn = Database.getConnection()) {
-            // delete course from courseId
+            // get average for all rounds
             String sql = "SELECT AVG(final_score) FROM rounds";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 ResultSet rs = stmt.executeQuery();
@@ -148,7 +149,7 @@ public class Stats {
     }
 
     // get number of throws for a course
-    public void calcTotalThrows(int courseId) {
+    public void calcTotalThrowsCourse(int courseId) {
         try (Connection conn = Database.getConnection()) {
             // select sum of strokes
             String sql = "SELECT SUM(hole_results.strokes) FROM hole_results INNER JOIN rounds ON rounds.round_id = hole_results.round_id WHERE course_id = ?";
@@ -165,7 +166,7 @@ public class Stats {
     }
 
     // get strokes and par each time, ++ to relevant statistical category, course specific
-    public void calcResults(int courseId) {
+    public void calcResultsCourse(int courseId) {
         try (Connection conn = Database.getConnection()) {
 
             String sql = "SELECT hole_results.strokes, holes.par FROM hole_results INNER JOIN holes ON holes.hole_id = hole_results.hole_id WHERE holes.course_id = ?";
@@ -215,9 +216,9 @@ public class Stats {
         }
     }
 
-    public void calcAverageScore(int courseId) {
+    public void calcAverageScoreCourse(int courseId) {
         try (Connection conn = Database.getConnection()) {
-            // delete course from courseId
+            // get average score for course
             String sql = "SELECT AVG(final_score) FROM rounds WHERE course_id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, courseId);
@@ -228,5 +229,46 @@ public class Stats {
         } catch (SQLException e) {
             System.out.println("Error fetching courses: " + e.getMessage());
         }
+    }
+
+    public int askWhichHole(int courseId, int hole_amount, Scanner input) {
+        System.out.println("Which hole would you like stats for? Enter the hole number.");
+
+        for (int i = 1; i <= hole_amount; i++) {
+            System.out.println("Hole " + i);
+        }
+        int choice = 0;
+        // get hole choice
+        while (true) {
+            try {
+                choice = input.nextInt();
+                if (choice < 1 || choice > hole_amount) {
+                    System.out.println("Please enter a proper choice.");
+                }
+                else {
+                    break;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Please enter a proper choice");
+                input.next();
+            }
+        }
+        // select correct hole by using hole number on this course
+        try (Connection conn = Database.getConnection()) {
+            // get hole_id from course_id and hole number
+            String sql = "SELECT hole_id FROM holes WHERE course_id = ? AND hole_number = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, courseId);
+                stmt.setInt(2, choice);
+                ResultSet rs = stmt.executeQuery();
+                // return hole_id
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching courses: " + e.getMessage());
+        }
+        // failed
+        return -1;
     }
 }

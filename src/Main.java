@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -143,8 +144,32 @@ public class Main {
 
                     // once courseId is retrieved, create new Stats object. functions similarly, just requres id
                     Stats courseStats = new Stats();
-                    courseStats.calcStats(courseId);
+                    courseStats.calcStatsCourse(courseId);
                     courseStats.displayStats();
+
+                    System.out.println("Would you like to view individual hole stats?");
+                    System.out.println("1. Yes\n2. No");
+                    // ask if user wants to see hole specific stats
+                    while (true) {
+                        try {
+                            choice = input.nextInt();
+                            if (choice < 1 || choice > 2) {
+                                System.out.println("Please enter a proper choice.");
+                            }
+                            else {
+                                break;
+                            }
+                        } catch (InputMismatchException e) {
+                            System.out.println("Please enter a proper choice");
+                            input.next();
+                        }
+                    }
+
+                    // user wants hole specific stats
+                    if (choice == 1) {
+                        Stats holeStats = new Stats();
+                        int hole = holeStats.askWhichHole(courseId, CourseDAO.getHoleAmount(courseId), input);
+                    }
                     break;
 
                 }
