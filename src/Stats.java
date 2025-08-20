@@ -3,6 +3,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Stats {
@@ -34,7 +35,12 @@ public class Stats {
 
     // show all stats to user
     public void displayStats() {
-        System.out.println("Rounds played: " + RoundDAO.getNumberOfRounds());
+        // get rounds played
+        int roundsPlayed = RoundDAO.getNumberOfRounds();
+        // don't display rounds played for hole stats
+        if (roundsPlayed != 0) {
+            System.out.println("Rounds played: " + roundsPlayed);
+        }
         // if average is negative, - will display
         if (averageScore < 0) {
             // ensure correct average formatting
@@ -244,8 +250,7 @@ public class Stats {
                 choice = input.nextInt();
                 if (choice < 1 || choice > hole_amount) {
                     System.out.println("Please enter a proper choice.");
-                }
-                else {
+                } else {
                     break;
                 }
             } catch (InputMismatchException e) {
@@ -270,5 +275,18 @@ public class Stats {
         }
         // failed
         return -1;
+    }
+
+    // FIXME
+    public void calcAverageScoreHole(int holeId, List<Integer> holeList) {
+        double average = 0;
+        int par = HoleDAO.getPar(holeId);
+
+        // subtract par from strokes to get result for each hole
+        // add all these results together and divide by length of list
+        for (int i = 0; i < holeList.size(); i++) {
+            average += (holeList.get(i) - par);
+        }
+        averageScore = average/holeList.size();
     }
 }

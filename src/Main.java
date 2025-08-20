@@ -167,8 +167,14 @@ public class Main {
 
                     // user wants hole specific stats
                     if (choice == 1) {
+                        // new Stats object
                         Stats holeStats = new Stats();
-                        int hole = holeStats.askWhichHole(courseId, CourseDAO.getHoleAmount(courseId), input);
+                        // get holeId
+                        int holeId = holeStats.askWhichHole(courseId, CourseDAO.getHoleAmount(courseId), input);
+                        // get results list for that hole
+                        List<Integer> holeList = Hole_ResultsDAO.getResultsForHole(holeId);
+                        holeStats.calcAverageScoreHole(holeId, holeList);
+                        holeStats.displayStats();
                     }
                     break;
 

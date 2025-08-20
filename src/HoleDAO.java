@@ -200,6 +200,24 @@ public class HoleDAO {
         }
     }
 
+    // get par using hole_id
+    public static int getPar(int holeId) {
+        try (Connection conn = Database.getConnection()) {
+            // select all courses
+            String sql = ("SELECT par FROM holes WHERE hole_id = ?");
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, holeId);
+                ResultSet rs = stmt.executeQuery();
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching courses: " + e.getMessage());
+        }
+        // failed
+        return -1;
+    }
+
 
 
 }
