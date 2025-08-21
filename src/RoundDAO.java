@@ -289,4 +289,22 @@ public class RoundDAO {
         // failed
         return -1;
     }
+
+    // get rounds played on one course
+    public static int getNumberOfRoundsCourse(int courseId) {
+        try (Connection conn = Database.getConnection()) {
+            // select number of rounds
+            String sql = "SELECT COUNT(round_id) FROM rounds WHERE course_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, courseId);
+                ResultSet rs  = stmt.executeQuery();
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        // failed
+        return -1;
+    }
 }
