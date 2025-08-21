@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Stats {
+    private int roundsCount;
     private int totalThrows;
     private double averageScore;
     private int aces;
@@ -18,13 +19,11 @@ public class Stats {
     private int doubleBogeys;
     private int tripleBogeys;
     private int overTripleBogeys;
-    private boolean isHoleStats;
-    private boolean isCourseStats;
-    private boolean isOverallStats
 
 
     // overall stats calc
     public void calcStats() {
+        roundsCount = RoundDAO.getNumberOfRounds();
         calcTotalThrows();
         calcResults();
         calcAverageScore();
@@ -32,7 +31,7 @@ public class Stats {
 
     // course specific stats calc
     public void calcStatsCourse(int courseId) {
-        isCourseStats = true;
+        roundsCount = RoundDAO.getNumberOfRoundsCourse(courseId);
         calcTotalThrowsCourse(courseId);
         calcResultsCourse(courseId);
         calcAverageScoreCourse(courseId);
@@ -42,12 +41,8 @@ public class Stats {
     public void displayStats() {
         // get rounds played
         // use overall method if course boolean is true, course specific if not
-        if (isOverallStats) {
-            int roundsPlayed = RoundDAO.getNumberOfRounds();
-        }
-        // don't display rounds played for hole stats
-        else if (!isHoleStats && isCourseStats) {
-            System.out.println("Rounds played: " + RoundDAO);
+        if (roundsCount != 0) {
+            System.out.println("Rounds played: " + roundsCount);
         }
         // if average is negative, - will display
         if (averageScore < 0) {
@@ -246,8 +241,6 @@ public class Stats {
     }
 
     public int askWhichHole(int courseId, int hole_amount, Scanner input) {
-        // set isHoleStats boolean to true for formatting later
-        isHoleStats = true;
         System.out.println("Which hole would you like stats for? Enter the hole number.");
 
         for (int i = 1; i <= hole_amount; i++) {
@@ -294,7 +287,7 @@ public class Stats {
 
         for (int i = 0; i < holeList.size(); i++) {
             // subtract par from strokes to get result for each hole
-            int result = (holeList.get(i) - par);
+            int result = (par - holeList.get(i));
             // add to proper statistical category
             if (holeList.get(i) == 1) {
                 aces++;
@@ -317,8 +310,8 @@ public class Stats {
                 }
 
             }
-            // add all results together to divide by length of list
-            average += result;
+            // subtract all results together to divide by length of list
+            average -= result;
         }
         averageScore = average/holeList.size();
     }
