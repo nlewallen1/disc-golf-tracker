@@ -142,7 +142,7 @@ public class Main {
                         System.out.println("Failed to get course_id" + e.getMessage());
                     }
 
-                    // once courseId is retrieved, create new Stats object. functions similarly, just requres id
+                    // once courseId is retrieved, create new Stats object. functions similarly, just requires id
                     Stats courseStats = new Stats();
                     courseStats.calcStatsCourse(courseId);
                     courseStats.displayStats();

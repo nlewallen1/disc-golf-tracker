@@ -18,6 +18,10 @@ public class Stats {
     private int doubleBogeys;
     private int tripleBogeys;
     private int overTripleBogeys;
+    private boolean isHoleStats;
+    private boolean isCourseStats;
+    private boolean isOverallStats
+
 
     // overall stats calc
     public void calcStats() {
@@ -28,6 +32,7 @@ public class Stats {
 
     // course specific stats calc
     public void calcStatsCourse(int courseId) {
+        isCourseStats = true;
         calcTotalThrowsCourse(courseId);
         calcResultsCourse(courseId);
         calcAverageScoreCourse(courseId);
@@ -36,10 +41,13 @@ public class Stats {
     // show all stats to user
     public void displayStats() {
         // get rounds played
-        int roundsPlayed = RoundDAO.getNumberOfRounds();
+        // use overall method if course boolean is true, course specific if not
+        if (isOverallStats) {
+            int roundsPlayed = RoundDAO.getNumberOfRounds();
+        }
         // don't display rounds played for hole stats
-        if (roundsPlayed != 0) {
-            System.out.println("Rounds played: " + roundsPlayed);
+        else if (!isHoleStats && isCourseStats) {
+            System.out.println("Rounds played: " + RoundDAO);
         }
         // if average is negative, - will display
         if (averageScore < 0) {
@@ -238,6 +246,8 @@ public class Stats {
     }
 
     public int askWhichHole(int courseId, int hole_amount, Scanner input) {
+        // set isHoleStats boolean to true for formatting later
+        isHoleStats = true;
         System.out.println("Which hole would you like stats for? Enter the hole number.");
 
         for (int i = 1; i <= hole_amount; i++) {
@@ -282,10 +292,33 @@ public class Stats {
         double average = 0;
         int par = HoleDAO.getPar(holeId);
 
-        // subtract par from strokes to get result for each hole
-        // add all these results together and divide by length of list
         for (int i = 0; i < holeList.size(); i++) {
-            average += (holeList.get(i) - par);
+            // subtract par from strokes to get result for each hole
+            int result = (holeList.get(i) - par);
+            // add to proper statistical category
+            if (holeList.get(i) == 1) {
+                aces++;
+            } else {
+                // 3+ bogey
+                if (result <= -4) {
+                    overTripleBogeys++;
+                } else {
+                    // defined categories
+                    switch (result) {
+                        case -3 -> tripleBogeys++;
+                        case -2 -> doubleBogeys++;
+                        case -1 -> bogeys++;
+                        case 0 -> pars++;
+                        case 1 -> birdies++;
+                        case 2 -> eagles++;
+                        case 3 -> albatrosses++;
+
+                    }
+                }
+
+            }
+            // add all results together to divide by length of list
+            average += result;
         }
         averageScore = average/holeList.size();
     }
