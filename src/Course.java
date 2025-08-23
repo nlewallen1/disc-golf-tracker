@@ -61,7 +61,6 @@ public class Course {
     }
 
     // create new row if adding a course
-    // FIXME maybe move
     public void createCourseData(Connection conn) throws SQLException {
         String sql = "INSERT INTO courses (name, hole_count) VALUES (?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -87,11 +86,6 @@ public class Course {
         }
     }
 
-    public int getHolePar(int num) {
-        return holes[num];
-    }
-
-
     public static int askCourseID(Scanner input, List<String> courseNames, String url) throws SQLException {
 
         String name;
@@ -99,11 +93,17 @@ public class Course {
         while (true) {
             try {
                 int choice = input.nextInt();
-                // get the name of listed course
-                name = courseNames.get(choice - 1);
-                break;
+                if (choice < 1 || choice > courseNames.size()) {
+                    System.out.println("Please enter a proper choice.");
+                }
+                else {
+                    // get the name of listed course
+                    name = courseNames.get(choice - 1);
+                    break;
+                }
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter an integer");
+                input.next();
             }
         }
 
@@ -133,7 +133,7 @@ public class Course {
         setHoleCount(input.nextInt());
 
         // ask for par for each hole
-         setHoles();
+        setHoles();
 
         // create course
         try (Connection conn = Database.getConnection()) {
@@ -179,8 +179,6 @@ public class Course {
         // return list
         return courseNames;
     }
-
-
 
 
 }

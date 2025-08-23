@@ -3,10 +3,6 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-// notes
-// maybe get rid of all those conn creations
-// stats idea - use final score to calculate number of throws (par amount, under or over)
-
 public class Main {
     public static void main(String[] args) {
 
@@ -18,20 +14,33 @@ public class Main {
         boolean run = true;
         // main loop
         while (run) {
-            //FIXME input validation when menu is complete
-            System.out.println("1. Add course");
-            System.out.println("2. Add round");
-            System.out.println("3. View round");
-            System.out.println("4. Edit round");
-            System.out.println("5. Delete course");
-            System.out.println("6. Delete round");
-            System.out.println("7. Overall stats");
-            System.out.println("8. Course specific stats");
-            System.out.println("9. Exit");
+            int choice = 0;
+            while (true) {
+                try {
+                    System.out.println("1. Add course");
+                    System.out.println("2. Add round");
+                    System.out.println("3. View round");
+                    System.out.println("4. Edit round");
+                    System.out.println("5. Delete course");
+                    System.out.println("6. Delete round");
+                    System.out.println("7. Overall stats");
+                    System.out.println("8. Course specific stats");
+                    System.out.println("9. Exit");
 
-            int choice = input.nextInt();
-            input.nextLine();
+                    choice = input.nextInt();
+                    input.nextLine();
 
+                    // break if valid
+                    if (choice > 0 && choice < 10) {
+                        break;
+                    } else {
+                        System.out.println("Please enter a proper choice.");
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Please enter a proper choice.");
+                    input.next();
+                }
+            }
             // menu
             switch (choice) {
                 // call createCourseData
@@ -155,8 +164,7 @@ public class Main {
                             choice = input.nextInt();
                             if (choice < 1 || choice > 2) {
                                 System.out.println("Please enter a proper choice.");
-                            }
-                            else {
+                            } else {
                                 break;
                             }
                         } catch (InputMismatchException e) {

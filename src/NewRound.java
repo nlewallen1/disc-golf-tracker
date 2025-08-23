@@ -2,8 +2,7 @@
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-// FIXME total throws either need to be added to each time user is asked or calculated
-// FIXME display results to user
+
 // add a new round of stats
 public class NewRound {
     private int roundId;

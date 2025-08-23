@@ -280,7 +280,6 @@ public class Stats {
         return -1;
     }
 
-    // FIXME
     public void calcAverageScoreHole(int holeId, List<Integer> holeList) {
         double average = 0;
         int par = HoleDAO.getPar(holeId);

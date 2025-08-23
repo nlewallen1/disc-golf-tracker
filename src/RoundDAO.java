@@ -132,11 +132,16 @@ public class RoundDAO {
         while (true) {
             try {
                 int choice = input.nextInt();
-                // get the round
-                date = dates.get(choice - 1);
-                break;
+                if (choice < 1 || choice > dates.size()) {
+                    System.out.println("Please enter a proper choice.");
+                } else {
+                    // get the round
+                    date = dates.get(choice - 1);
+                    break;
+                }
             } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter an integer");
+                System.out.println("Invalid input. Please enter an integer.");
+                input.next();
             }
         }
 
@@ -159,7 +164,6 @@ public class RoundDAO {
     // display course, hole number, hole par, strokes
     // need to use roundId to get the right results, then simply display in ascending order, but also need to match to
     // hole_id in holes to get the par
-    // FIXME bogeys, birdies etc.
     public static void displayResults(int roundId) {
         try (Connection conn = Database.getConnection()) {
             String sql = "SELECT course_id FROM rounds WHERE round_id = ?";
