@@ -2,6 +2,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -9,18 +12,36 @@ import java.util.Scanner;
 
 public class RoundDAO {
 
+    // date checker for validation
+    public static boolean dateChecker(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try {
+            LocalDate.parse(date, formatter);
+            // valid
+            return true;
+        } catch (DateTimeParseException e) {
+            // invalid
+            return false;
+        }
+    }
+
     // get round info and save round id
     public static int askRound(int courseId) {
         Scanner input = new Scanner(System.in);
         String date;
         int roundId = 0;
+        System.out.println("Enter date played. (YYYY-MM-DD)");
         while (true) {
             try {
-                System.out.println("Enter date played. (YYYY-MM-DD)");
                 date = input.nextLine();
-                break;
+                boolean dateCheck = dateChecker(date);
+                // break if date is good
+                if (dateCheck) {
+                    break;
+                }
+                System.out.println("Please enter a valid date.");
             } catch (InputMismatchException e) {
-                System.out.println("An error occurred while reading the date: " + e.getMessage());
+                System.out.println(e.getMessage());
             }
         }
         try (Connection conn = Database.getConnection()) {
@@ -228,6 +249,7 @@ public class RoundDAO {
             System.out.println("Final score: " + finalScore);
         }
     }
+
     // return final score from a round
     public static int getFinalScore(int roundId) {
         try (Connection conn = Database.getConnection()) {
@@ -283,7 +305,7 @@ public class RoundDAO {
             // select number of rounds
             String sql = "SELECT COUNT(round_id) FROM rounds";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                ResultSet rs  = stmt.executeQuery();
+                ResultSet rs = stmt.executeQuery();
                 return rs.getInt(1);
             }
 
@@ -301,7 +323,7 @@ public class RoundDAO {
             String sql = "SELECT COUNT(round_id) FROM rounds WHERE course_id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, courseId);
-                ResultSet rs  = stmt.executeQuery();
+                ResultSet rs = stmt.executeQuery();
                 return rs.getInt(1);
             }
 
