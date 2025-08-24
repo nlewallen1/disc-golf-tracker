@@ -7,14 +7,13 @@ public class Main {
     public static void main(String[] args) {
 
         // connect to db
-        String url = "jdbc:sqlite:disc_golf_tracker.db";
         Database.connectToDatabase();
 
         Scanner input = new Scanner(System.in);
         boolean run = true;
         // main loop
         while (run) {
-            int choice = 0;
+            int choice;
             while (true) {
                 try {
                     System.out.println("1. Add course");
@@ -46,7 +45,7 @@ public class Main {
                 // call createCourseData
                 case 1: {
                     Course newcourse = new Course();
-                    newcourse.createCourse(input, url);
+                    newcourse.createCourse(input);
                     break;
                 }
                 // add a round
@@ -58,7 +57,7 @@ public class Main {
                     // get course id
                     int courseId = 0;
                     try {
-                        courseId = Course.askCourseID(input, courseNames, url);
+                        courseId = Course.askCourseID(input, courseNames);
                     } catch (SQLException e) {
                         System.out.println("Failed to get course_id" + e.getMessage());
                     }
@@ -98,7 +97,7 @@ public class Main {
                     // get course id
                     int courseId = 0;
                     try {
-                        courseId = Course.askCourseID(input, courseNames, url);
+                        courseId = Course.askCourseID(input, courseNames);
                     } catch (SQLException e) {
                         System.out.println("Failed to get course_id" + e.getMessage());
                     }
@@ -146,7 +145,7 @@ public class Main {
                     // get course id
                     int courseId = 0;
                     try {
-                        courseId = Course.askCourseID(input, courseNames, url);
+                        courseId = Course.askCourseID(input, courseNames);
                     } catch (SQLException e) {
                         System.out.println("Failed to get course_id" + e.getMessage());
                     }

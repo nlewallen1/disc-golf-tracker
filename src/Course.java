@@ -13,11 +13,6 @@ public class Course {
     private int totalPar;
     private int courseId;
 
-    // set holeCount
-    public int getHoleCount() {
-        return holeCount;
-    }
-
     // get holeCount
     public void setHoleCount(int holeCount) {
         this.holeCount = holeCount;
@@ -26,16 +21,6 @@ public class Course {
     // set name
     public void setName(String name) {
         this.name = name;
-    }
-
-    // get name
-    public String getName() {
-        return name;
-    }
-
-    // get totalPar
-    public int getTotalPar() {
-        return totalPar;
     }
 
     // set par for each hole
@@ -86,7 +71,7 @@ public class Course {
         }
     }
 
-    public static int askCourseID(Scanner input, List<String> courseNames, String url) throws SQLException {
+    public static int askCourseID(Scanner input, List<String> courseNames) throws SQLException {
 
         String name;
         // get user input
@@ -95,8 +80,7 @@ public class Course {
                 int choice = input.nextInt();
                 if (choice < 1 || choice > courseNames.size()) {
                     System.out.println("Please enter a proper choice.");
-                }
-                else {
+                } else {
                     // get the name of listed course
                     name = courseNames.get(choice - 1);
                     break;
@@ -124,7 +108,7 @@ public class Course {
     }
 
     // create course
-    public void createCourse(Scanner input, String url) {
+    public void createCourse(Scanner input) {
 
         System.out.println("Enter course name");
         setName(input.nextLine());

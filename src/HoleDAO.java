@@ -98,7 +98,7 @@ public class HoleDAO {
         while (true) {
             System.out.println("Which hole would you like to edit?");
 
-            int holeChoice = 0;
+            int holeChoice;
             while (true) {
                 try {
                     while (true) {

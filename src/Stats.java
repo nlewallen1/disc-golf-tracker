@@ -246,7 +246,7 @@ public class Stats {
         for (int i = 1; i <= hole_amount; i++) {
             System.out.println("Hole " + i);
         }
-        int choice = 0;
+        int choice;
         // get hole choice
         while (true) {
             try {
