@@ -78,7 +78,10 @@ public class Course {
         while (true) {
             try {
                 int choice = input.nextInt();
-                if (choice < 1 || choice > courseNames.size()) {
+                if (choice == 0) {
+                    return 0;
+                }
+                else if (choice < 1 || choice > courseNames.size()) {
                     System.out.println("Please enter a proper choice.");
                 } else {
                     // get the name of listed course
@@ -110,10 +113,17 @@ public class Course {
     // create course
     public void createCourse(Scanner input) {
 
-        System.out.println("Enter course name");
-        setName(input.nextLine());
+        System.out.println("Enter course name, or press 0 to exit.");
 
-        System.out.println("Enter number of holes on course");
+        // allow exit
+        String choice = input.nextLine();
+        if (choice.equals("0")) {
+            return;
+        }
+        setName(choice);
+
+
+        System.out.println("Enter number of holes on course.");
         setHoleCount(input.nextInt());
 
         // ask for par for each hole
@@ -151,7 +161,7 @@ public class Course {
                 // loop through result set, list all courses
                 while (rs.next()) {
                     String name = rs.getString("name");
-                    System.out.println(i++ + ") " + name);
+                    System.out.println(i++ + ". " + name);
                     courseNames.add(name);
                 }
             }

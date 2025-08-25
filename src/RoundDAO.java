@@ -116,7 +116,6 @@ public class RoundDAO {
 
     // get list of rounds dates
     public static List<String> showDates() {
-        System.out.println("What round would you like to view?");
         // array list needed to keep track of dates on the list
         List<String> dates = new ArrayList<>();
 

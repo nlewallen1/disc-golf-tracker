@@ -52,7 +52,10 @@ public class Main {
                 case 2: {
                     // ask user for input and get course names
                     System.out.println("What course did you play?");
+
                     List<String> courseNames = Course.listCourses();
+                    System.out.println("0. Exit");
+
 
                     // get course id
                     int courseId = 0;
@@ -60,6 +63,11 @@ public class Main {
                         courseId = Course.askCourseID(input, courseNames);
                     } catch (SQLException e) {
                         System.out.println("Failed to get course_id" + e.getMessage());
+                    }
+
+                    // if courseId is still 0, exit
+                    if (courseId == 0) {
+                        break;
                     }
 
                     // get user input
@@ -70,6 +78,7 @@ public class Main {
                 }
                 // view round
                 case 3: {
+                    System.out.println("Which round would you like to view?");
                     // ask user for input and get dates
                     List<String> dates = RoundDAO.showDates();
 
@@ -81,6 +90,25 @@ public class Main {
                         System.out.println("Failed to get round_id" + e.getMessage());
                     }
                     RoundDAO.displayResults(roundId);
+
+                    // wait for user to go back to main menu
+                    System.out.println("\nPress 0 to return.");
+                    int eChoice;
+                    while (true) {
+                        try {
+                            eChoice = input.nextInt();
+                            // break loop if yes
+                            if (eChoice == 0) {
+                                break;
+                            } else {
+                                System.out.println("Please enter a proper choice.");
+                            }
+                        } catch (InputMismatchException e) {
+                            System.out.println(e);
+                            input.next();
+                        }
+                    }
+
                     break;
                 }
                 // edit results
@@ -90,12 +118,47 @@ public class Main {
                 }
                 // delete course
                 case 5: {
+                    System.out.println("All rounds and stats for the chosen course will be deleted. " +
+                            "Are you sure you want to continue?");
+                    System.out.println("1. Yes");
+                    System.out.println("2. No");
+
+                    int eChoice;
+                    boolean cont = true;
+
+                    while (true) {
+                        try {
+                            eChoice = input.nextInt();
+                            // break loop if yes
+                            if (eChoice == 1) {
+                                break;
+                            }
+                            // return if no
+                            else if (eChoice == 2) {
+                                cont = false;
+                                break;
+                            } else {
+                                System.out.println("Please enter a proper choice.");
+                            }
+                        } catch (InputMismatchException e) {
+                            System.out.println(e);
+                            input.next();
+                        }
+                    }
+
+                    // exit case if user chose to not continue
+                    if (!cont) {
+                        break;
+                    }
+
+                    System.out.println("Which course would you like to delete?");
+
                     // get course list
                     List<String> courseNames = Course.listCourses();
-                    System.out.println("Which course would you like to delete? " +
-                            "(All rounds and stats at this course will be deleted.)");
+
                     // get course id
                     int courseId = 0;
+
                     try {
                         courseId = Course.askCourseID(input, courseNames);
                     } catch (SQLException e) {
@@ -111,6 +174,39 @@ public class Main {
                 }
                 // delete round
                 case 6: {
+                    System.out.println("Round deletion will remove stats related to the chosen round. " +
+                            "Are you sure you want to continue?");
+                    System.out.println("1. Yes");
+                    System.out.println("2. No");
+
+                    int eChoice;
+                    boolean cont = true;
+
+                    while (true) {
+                        try {
+                            eChoice = input.nextInt();
+                            // break loop if yes
+                            if (eChoice == 1) {
+                                break;
+                            }
+                            // return if no
+                            else if (eChoice == 2) {
+                                cont = false;
+                                break;
+                            } else {
+                                System.out.println("Please enter a proper choice.");
+                            }
+                        } catch (InputMismatchException e) {
+                            System.out.println(e);
+                            input.next();
+                        }
+                    }
+
+                    // exit case if user chose to not continue
+                    if (!cont) {
+                        break;
+                    }
+
                     System.out.println("Which round would you like to delete?");
                     List<String> dates = RoundDAO.showDates();
 
@@ -134,6 +230,25 @@ public class Main {
                     stats.calcStats();
 
                     stats.displayStats();
+
+                    // wait for user to go back to main menu
+                    System.out.println("\nPress 0 to return.");
+                    int eChoice;
+                    while (true) {
+                        try {
+                            eChoice = input.nextInt();
+                            // break loop if yes
+                            if (eChoice == 0) {
+                                break;
+                            } else {
+                                System.out.println("Please enter a proper choice.");
+                            }
+                        } catch (InputMismatchException e) {
+                            System.out.println(e);
+                            input.next();
+                        }
+                    }
+
                     break;
                 }
                 // course specific stats
@@ -155,7 +270,7 @@ public class Main {
                     courseStats.calcStatsCourse(courseId);
                     courseStats.displayStats();
 
-                    System.out.println("Would you like to view individual hole stats?");
+                    System.out.println("\nWould you like to view individual hole stats?");
                     System.out.println("1. Yes\n2. No");
                     // ask if user wants to see hole specific stats
                     while (true) {
@@ -182,6 +297,24 @@ public class Main {
                         List<Integer> holeList = Hole_ResultsDAO.getResultsForHole(holeId);
                         holeStats.calcAverageScoreHole(holeId, holeList);
                         holeStats.displayStats();
+                    } else {
+                        // wait for user to go back to main menu
+                        System.out.println("\nPress 0 to return.");
+                        int eChoice;
+                        while (true) {
+                            try {
+                                eChoice = input.nextInt();
+                                // break loop if yes
+                                if (eChoice == 0) {
+                                    break;
+                                } else {
+                                    System.out.println("Please enter a proper choice.");
+                                }
+                            } catch (InputMismatchException e) {
+                                System.out.println(e);
+                                input.next();
+                            }
+                        }
                     }
                     break;
 

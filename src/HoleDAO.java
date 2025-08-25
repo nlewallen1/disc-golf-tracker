@@ -68,6 +68,8 @@ public class HoleDAO {
 
         Scanner input = new Scanner(System.in);
 
+        System.out.println("Which round would you like to edit?");
+
         // need to display rounds for editing
         // ask user for input and get dates
         List<String> dates = RoundDAO.showDates();
@@ -94,31 +96,37 @@ public class HoleDAO {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
+
         // continue asking to edit
         while (true) {
-            System.out.println("Which hole would you like to edit?");
+            System.out.println("Which hole would you like to edit? (Enter hole number, or 0 to exit.)");
 
             int holeChoice;
             while (true) {
                 try {
-                    while (true) {
-                        holeChoice = input.nextInt();
-                        // break from loop if hole count is correct
-                        if (holeChoice >= 1 || holeChoice <= holeCount) {
-                            break;
-                        } else {
-                            System.out.println("Please enter an existing hole.");
-                        }
+                    holeChoice = input.nextInt();
+                    // allow exit
+                    if (holeChoice == 0) {
+                        return;
                     }
+                    // break from loop if hole count is correct
+                    else if (holeChoice >= 1 || holeChoice <= holeCount) {
+                        break;
+                    } else {
+                        System.out.println("Please enter an existing hole.");
+                    }
+
                     // break if proper int
                     break;
                 } catch (InputMismatchException e) {
                     System.out.println(e);
+                    input.next();
                 }
             }
 
             System.out.println("Enter new result.");
-            int newResult = 0;
+            int newResult;
             while (true) {
                 try {
                     while (true) {
@@ -217,7 +225,6 @@ public class HoleDAO {
         // failed
         return -1;
     }
-
 
 
 }
