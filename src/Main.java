@@ -50,6 +50,13 @@ public class Main {
                 }
                 // add a round
                 case 2: {
+                    // check if any courses exist
+                    boolean coursesExist = CourseDAO.checkForEntries();
+                    // break if courses have not been added
+                    if (!coursesExist) {
+                        System.out.println("Please create a course first.");
+                        break;
+                    }
                     // ask user for input and get course names
                     System.out.println("What course did you play?");
 
@@ -78,6 +85,14 @@ public class Main {
                 }
                 // view round
                 case 3: {
+                    // check if any rounds exist
+                    boolean roundsExist = RoundDAO.checkForEntries();
+                    // break if courses have not been added
+                    if (!roundsExist) {
+                        System.out.println("Please add a round first.");
+                        break;
+                    }
+
                     System.out.println("Which round would you like to view?");
                     // ask user for input and get dates
                     List<String> dates = RoundDAO.showDates();
@@ -113,11 +128,27 @@ public class Main {
                 }
                 // edit results
                 case 4: {
+                    // check if any rounds exist
+                    boolean roundsExist = RoundDAO.checkForEntries();
+                    // break if courses have not been added
+                    if (!roundsExist) {
+                        System.out.println("Please add a round first.");
+                        break;
+                    }
+
                     HoleDAO.editHoleResults();
                     break;
                 }
                 // delete course
                 case 5: {
+                    // check if any courses exist
+                    boolean coursesExist = CourseDAO.checkForEntries();
+                    // break if courses have not been added
+                    if (!coursesExist) {
+                        System.out.println("Please create a course first.");
+                        break;
+                    }
+
                     System.out.println("All rounds and stats for the chosen course will be deleted. " +
                             "Are you sure you want to continue?");
                     System.out.println("1. Yes");
@@ -174,6 +205,14 @@ public class Main {
                 }
                 // delete round
                 case 6: {
+                    // check if any rounds exist
+                    boolean roundsExist = RoundDAO.checkForEntries();
+                    // break if courses have not been added
+                    if (!roundsExist) {
+                        System.out.println("Please add a round first.");
+                        break;
+                    }
+
                     System.out.println("Round deletion will remove stats related to the chosen round. " +
                             "Are you sure you want to continue?");
                     System.out.println("1. Yes");
@@ -253,6 +292,14 @@ public class Main {
                 }
                 // course specific stats
                 case 8: {
+                    // check if any courses exist
+                    boolean coursesExist = CourseDAO.checkForEntries();
+                    // break if courses have not been added
+                    if (!coursesExist) {
+                        System.out.println("Please create a course first.");
+                        break;
+                    }
+
                     // ask user for input and get course names
                     System.out.println("What course would you like stats for?");
                     List<String> courseNames = Course.listCourses();
