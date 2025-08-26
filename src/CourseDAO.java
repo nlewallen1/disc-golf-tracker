@@ -4,6 +4,28 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CourseDAO {
+
+    // check if courses have been added
+    // returns true if courses exist, false if not
+    public static boolean checkForEntries() {
+        try (Connection conn = Database.getConnection()) {
+            String sql = "SELECT COUNT(course_id) FROM courses";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                ResultSet rs = stmt.executeQuery();
+                if (rs.getInt(1) == 0) {
+                    // courses don't exist yet
+                    return false;
+                }
+
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        // courses exist
+        return true;
+    }
+
     public static int getHoleAmount(int courseId) {
 
         // determine amount of holes on course
