@@ -12,6 +12,27 @@ import java.util.Scanner;
 
 public class RoundDAO {
 
+    // check if rounds have been added
+    // returns true if rounds exist, false if not
+    public static boolean checkForEntries() {
+        try (Connection conn = Database.getConnection()) {
+            String sql = "SELECT COUNT(round_id) FROM rounds";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                ResultSet rs = stmt.executeQuery();
+                if (rs.getInt(1) == 0) {
+                    // rounds don't exist yet
+                    return false;
+                }
+
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        // rounds exist
+        return true;
+    }
+
     // date checker for validation
     public static boolean dateChecker(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
