@@ -136,7 +136,7 @@ public class Main {
                         break;
                     }
 
-                    HoleDAO.editHoleResults();
+                    Hole_ResultsDAO.editHoleResults();
                     break;
                 }
                 // delete course
