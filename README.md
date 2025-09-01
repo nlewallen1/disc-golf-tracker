@@ -7,12 +7,13 @@ Add and remove courses
 Add and remove rounds
 Edit courses, rounds
 View round history
-Track important stats (WIP)
+Track important stats
 
 Installation:
 Java Development Kit 21 or higher required.
 sqlite-jdbc-3.50.3.0 included in lib  
+Run by using run.bat
 
 Notes:
 This is a personal project for learning purposes. Contributions are not accepted.
-Currently unfinished.
+
