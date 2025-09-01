@@ -353,4 +353,41 @@ public class RoundDAO {
         // failed
         return -1;
     }
+
+    // edit a round's date
+    public static void editDate(int round_id) {
+        Scanner input = new Scanner(System.in);
+
+        // date prompt
+        String date;
+        System.out.println("Enter new date played. (YYYY-MM-DD)");
+        while (true) {
+            try {
+                date = input.nextLine();
+                boolean dateCheck = dateChecker(date);
+                // break if date is good
+                if (dateCheck) {
+                    break;
+                }
+                System.out.println("Please enter a valid date.");
+            } catch (InputMismatchException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        try (Connection conn = Database.getConnection()) {
+            // edit date
+            String sql = "UPDATE rounds SET date = ? WHERE round_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, date);
+                stmt.setInt(2, round_id);
+                stmt.executeUpdate();
+                System.out.println("Date updated!");
+                System.out.println("Round results:");
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
