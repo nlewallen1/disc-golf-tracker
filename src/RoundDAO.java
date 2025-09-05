@@ -142,7 +142,7 @@ public class RoundDAO {
 
         try (Connection conn = Database.getConnection()) {
             // select all dates
-            String sql = "SELECT rounds.date, courses.name FROM rounds INNER JOIN courses ON courses.course_id = rounds.course_id";
+            String sql = "SELECT rounds.date, courses.name FROM rounds INNER JOIN courses ON courses.course_id = rounds.course_id ORDER BY rounds.date DESC";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 ResultSet rs = stmt.executeQuery();
 
