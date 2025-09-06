@@ -71,7 +71,7 @@ public class Hole_ResultsDAO {
 
         // continue asking to edit
         while (true) {
-            System.out.println("Which hole would you like to edit? (Enter hole number, or 0 to exit.)");
+            System.out.println("Which hole would you like to edit? (Enter hole number or 0 to exit.)");
 
             int holeChoice;
             while (true) {

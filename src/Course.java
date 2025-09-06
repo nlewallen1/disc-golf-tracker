@@ -113,7 +113,7 @@ public class Course {
     // create course
     public void createCourse(Scanner input) {
 
-        System.out.println("Enter course name, or press 0 to exit.");
+        System.out.println("Enter course name or press 0 to exit.");
 
         // allow exit
         String choice = input.nextLine();
@@ -123,7 +123,7 @@ public class Course {
         setName(choice);
 
 
-        System.out.println("Enter number of holes on course.");
+        System.out.println("Enter the number of holes on the course.");
         setHoleCount(input.nextInt());
 
         // ask for par for each hole
