@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 
 // add a new round of stats
-public class NewRound {
+public class Round {
     private int roundId;
     private int finalScore;
     private final int courseId;
@@ -14,7 +14,7 @@ public class NewRound {
 
 
     // constructor
-    public NewRound(int courseId) {
+    public Round(int courseId) {
         roundId = 0;
         finalScore = 0;
         this.courseId = courseId;
